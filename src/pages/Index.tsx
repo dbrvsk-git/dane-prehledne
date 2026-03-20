@@ -90,6 +90,9 @@ export default function Index() {
           flatTaxTotal={flatTax.annualTotal}
           classicTotal={classicTax.annualTotal}
           flatTaxAvailable={flatTax.available}
+          flatTaxMonthlyNet={flatTax.available ? Math.round((annualIncome - flatTax.annualTotal) / 12) : undefined}
+          classicMonthlyNet={classicTax.monthlyNetIncome}
+          annualIncome={annualIncome}
         />
 
         {/* Summary */}
