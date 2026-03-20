@@ -172,6 +172,7 @@ export function calculateClassicTax(inputs: TaxInputs): ClassicTaxResult {
     healthMonthly: isStarting && activityType === 'main' ? STARTING_HEALTH_MONTHLY : Math.round(finalHealthInsurance / 12),
     annualTotal,
     netIncome,
+    monthlyNetIncome,
     effectiveRate,
   };
 }
