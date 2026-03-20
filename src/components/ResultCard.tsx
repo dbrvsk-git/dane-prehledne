@@ -1,7 +1,7 @@
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { Info, AlertTriangle } from 'lucide-react';
-import { formatCZK } from '@/lib/taxCalculations';
-import type { FlatTaxResult, ClassicTaxResult } from '@/lib/taxCalculations';
+import { formatCZK, hasAnyDiscount } from '@/lib/taxCalculations';
+import type { FlatTaxResult, ClassicTaxResult, DiscountInputs } from '@/lib/taxCalculations';
 
 function InfoTip({ text }: { text: string }) {
   return (
@@ -18,10 +18,13 @@ interface FlatTaxCardProps {
   result: FlatTaxResult;
   isCheaper: boolean;
   annualIncome: number;
+  discounts: DiscountInputs;
 }
 
-export function FlatTaxCard({ result, isCheaper, annualIncome }: FlatTaxCardProps) {
+export function FlatTaxCard({ result, isCheaper, annualIncome, discounts }: FlatTaxCardProps) {
   const monthlyNet = result.available ? Math.round((annualIncome - result.annualTotal) / 12) : 0;
+  const showDiscountWarning = hasAnyDiscount(discounts);
+
   return (
     <div className={`card-elevated p-6 space-y-4 ${!result.available ? 'opacity-60' : ''}`}>
       <div className="flex items-center justify-between">
@@ -38,6 +41,16 @@ export function FlatTaxCard({ result, isCheaper, annualIncome }: FlatTaxCardProp
         </div>
       ) : (
         <>
+          {showDiscountWarning && (
+            <div className="flex gap-3 p-4 rounded-lg bg-amber-50 border border-amber-200">
+              <AlertTriangle className="h-5 w-5 text-amber-600 shrink-0 mt-0.5" />
+              <p className="text-sm text-amber-800">
+                ⚠️ V paušálním daňovém režimu nelze uplatnit žádné slevy ani daňová zvýhodnění na děti.
+                Pro využití těchto slev je nutné přejít na klasické zdanění.
+              </p>
+            </div>
+          )}
+
           <div className="p-3 rounded-lg bg-muted text-sm text-muted-foreground">
             {result.tierName} ({formatCZK(result.monthlyPayment)}/měsíc)
             <InfoTip text="Paušální daň zahrnuje daň z příjmů, sociální a zdravotní pojištění v jedné platbě. Není nutné podávat daňové přiznání." />
@@ -70,6 +83,9 @@ interface ClassicTaxCardProps {
 }
 
 export function ClassicTaxCard({ result, annualIncome, isCheaper, showDetail, onToggleDetail }: ClassicTaxCardProps) {
+  const bd = result.discountBreakdown;
+  const hasBonus = bd.taxBonus > 0;
+
   return (
     <div className="card-elevated p-6 space-y-4">
       <div className="flex items-center justify-between">
@@ -80,11 +96,29 @@ export function ClassicTaxCard({ result, annualIncome, isCheaper, showDetail, on
       </div>
 
       <div className="space-y-3">
-        <Row
-          label="Daň z příjmů"
-          value={formatCZK(result.incomeTaxAfterDiscount) + '/rok'}
-          tip="Daň z příjmů po uplatnění slev. Sazba 15 %, nad 1 762 812 Kč sazbou 23 %."
-        />
+        {/* Income tax with bonus display */}
+        {hasBonus ? (
+          <div>
+            <div className="flex justify-between items-center text-sm">
+              <span className="flex items-center text-muted-foreground">
+                Daň z příjmů
+                <InfoTip text="Daň z příjmů po uplatnění slev. Sazba 15 %, nad 1 762 812 Kč sazbou 23 %." />
+              </span>
+              <span>0 Kč/rok</span>
+            </div>
+            <div className="flex justify-between items-center text-sm mt-1">
+              <span className="text-green-600 font-medium">Daňový bonus</span>
+              <span className="text-green-600 font-semibold">+{formatCZK(bd.taxBonus)}</span>
+            </div>
+          </div>
+        ) : (
+          <Row
+            label="Daň z příjmů"
+            value={formatCZK(result.incomeTaxAfterDiscount) + '/rok'}
+            tip="Daň z příjmů po uplatnění slev. Sazba 15 %, nad 1 762 812 Kč sazbou 23 %."
+          />
+        )}
+
         <Row
           label="Sociální pojištění"
           value={`${formatCZK(result.socialInsurance)}/rok (${formatCZK(result.socialMonthly)}/měs.)`}
@@ -118,10 +152,38 @@ export function ClassicTaxCard({ result, annualIncome, isCheaper, showDetail, on
           <DetailRow label="Paušální výdaje" value={`− ${formatCZK(result.expenses)} (strop: ${formatCZK(result.expenseCap)})`} />
           <DetailRow label="Základ daně" value={formatCZK(result.taxBase)} />
           <DetailRow label="Daň (15 % / 23 %)" value={formatCZK(result.incomeTax)} />
-          {result.taxpayerDiscount > 0 && (
-            <DetailRow label="Sleva na poplatníka" value={`− ${formatCZK(result.taxpayerDiscount)}`} />
-          )}
-          <DetailRow label="Daň po slevách" value={formatCZK(result.incomeTaxAfterDiscount)} bold />
+
+          {/* Discount breakdown */}
+          <div className="border-t border-border pt-2 mt-2 space-y-1">
+            <p className="font-medium text-xs text-muted-foreground uppercase tracking-wide">Slevy na dani</p>
+            <DetailRow label="Daň před slevami" value={formatCZK(bd.taxBeforeDiscounts)} />
+            {bd.taxpayerDiscount > 0 && (
+              <DetailRow label="Sleva na poplatníka" value={`− ${formatCZK(bd.taxpayerDiscount)}`} />
+            )}
+            {bd.spouseDiscount > 0 && (
+              <DetailRow label="Sleva na manžela/manželku" value={`− ${formatCZK(bd.spouseDiscount)}`} />
+            )}
+            {bd.disabilityDiscount > 0 && (
+              <DetailRow label="Sleva pro invalidy" value={`− ${formatCZK(bd.disabilityDiscount)}`} />
+            )}
+            {bd.ztpDiscount > 0 && (
+              <DetailRow label="Sleva na ZTP/P" value={`− ${formatCZK(bd.ztpDiscount)}`} />
+            )}
+            {bd.childrenDiscount > 0 && (
+              <DetailRow label="Zvýhodnění na děti" value={`− ${formatCZK(bd.childrenDiscount)}`} />
+            )}
+            {hasBonus ? (
+              <>
+                <DetailRow label="Výsledná daň" value="0 Kč" bold />
+                <div className="flex justify-between font-semibold text-green-600">
+                  <span>Daňový bonus</span>
+                  <span>+{formatCZK(bd.taxBonus)}</span>
+                </div>
+              </>
+            ) : (
+              <DetailRow label="Výsledná daň z příjmů" value={formatCZK(result.incomeTaxAfterDiscount)} bold />
+            )}
+          </div>
         </div>
       )}
     </div>

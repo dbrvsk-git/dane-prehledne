@@ -9,6 +9,7 @@ import {
   formatCZK,
   type ExpenseType,
   type ActivityType,
+  type DiscountInputs,
 } from '@/lib/taxCalculations';
 
 export default function Index() {
@@ -18,8 +19,16 @@ export default function Index() {
   const [activityType, setActivityType] = useState<ActivityType>('main');
   const [isStarting, setIsStarting] = useState(false);
   const [showDetail, setShowDetail] = useState(false);
+  const [discounts, setDiscounts] = useState<DiscountInputs>({
+    spouseDiscount: false,
+    spouseZTP: false,
+    disabilityType: 'none',
+    ztpHolder: false,
+    childrenCount: 0,
+    childrenZTPCount: 0,
+  });
 
-  const inputs = { annualIncome, expenseType, taxpayerDiscount, activityType, isStarting };
+  const inputs = { annualIncome, expenseType, taxpayerDiscount, activityType, isStarting, discounts };
   const flatTax = calculateFlatTax(inputs);
   const classicTax = calculateClassicTax(inputs);
 
@@ -32,7 +41,6 @@ export default function Index() {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
       <header className="bg-primary text-primary-foreground py-8">
         <div className="container max-w-6xl mx-auto px-4">
           <h1 className="text-2xl md:text-3xl font-bold">Kalkulačka daní pro OSVČ 2027</h1>
@@ -43,18 +51,18 @@ export default function Index() {
       </header>
 
       <main className="container max-w-6xl mx-auto px-4 py-8 space-y-8">
-        {/* Inputs */}
         <TaxInputPanel
           annualIncome={annualIncome} setAnnualIncome={setAnnualIncome}
           expenseType={expenseType} setExpenseType={setExpenseType}
           taxpayerDiscount={taxpayerDiscount} setTaxpayerDiscount={setTaxpayerDiscount}
           activityType={activityType} setActivityType={setActivityType}
           isStarting={isStarting} setIsStarting={setIsStarting}
+          discounts={discounts} setDiscounts={setDiscounts}
         />
 
         {/* Results - desktop: 2 columns, mobile: tabs */}
         <div className="hidden md:grid md:grid-cols-2 gap-6">
-          <FlatTaxCard result={flatTax} isCheaper={flatCheaper} annualIncome={annualIncome} />
+          <FlatTaxCard result={flatTax} isCheaper={flatCheaper} annualIncome={annualIncome} discounts={discounts} />
           <ClassicTaxCard
             result={classicTax}
             annualIncome={annualIncome}
@@ -71,7 +79,7 @@ export default function Index() {
               <TabsTrigger value="classic" className="flex-1">Paušální výdaje</TabsTrigger>
             </TabsList>
             <TabsContent value="flat">
-              <FlatTaxCard result={flatTax} isCheaper={flatCheaper} annualIncome={annualIncome} />
+              <FlatTaxCard result={flatTax} isCheaper={flatCheaper} annualIncome={annualIncome} discounts={discounts} />
             </TabsContent>
             <TabsContent value="classic">
               <ClassicTaxCard
@@ -85,7 +93,6 @@ export default function Index() {
           </Tabs>
         </div>
 
-        {/* Chart */}
         <ComparisonChart
           flatTaxTotal={flatTax.annualTotal}
           classicTotal={classicTax.annualTotal}
@@ -95,7 +102,6 @@ export default function Index() {
           annualIncome={annualIncome}
         />
 
-        {/* Summary */}
         {flatTax.available && difference > 0 && (
           <div className="card-elevated p-6 border-l-4 border-l-success">
             <p className="text-base font-medium text-foreground">
@@ -106,7 +112,6 @@ export default function Index() {
           </div>
         )}
 
-        {/* Disclaimer */}
         <p className="text-xs text-muted-foreground text-center py-4 border-t border-border">
           ⚠️ Kalkulačka slouží pouze pro orientační výpočet. Pro přesné daňové poradenství kontaktujte daňového poradce. Hodnoty vycházejí z parametrů roku 2026.
         </p>

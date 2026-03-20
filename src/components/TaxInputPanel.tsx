@@ -4,8 +4,8 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
-import { Info } from 'lucide-react';
-import type { ExpenseType, ActivityType } from '@/lib/taxCalculations';
+import { Info, Minus, Plus } from 'lucide-react';
+import type { ExpenseType, ActivityType, DiscountInputs, DisabilityType } from '@/lib/taxCalculations';
 
 interface Props {
   annualIncome: number;
@@ -18,6 +18,8 @@ interface Props {
   setActivityType: (v: ActivityType) => void;
   isStarting: boolean;
   setIsStarting: (v: boolean) => void;
+  discounts: DiscountInputs;
+  setDiscounts: (v: DiscountInputs) => void;
 }
 
 function InfoTip({ text }: { text: string }) {
@@ -35,6 +37,30 @@ function formatInputValue(value: number): string {
   return value.toLocaleString('cs-CZ');
 }
 
+function Stepper({ value, onChange, min = 0, max = 10 }: { value: number; onChange: (v: number) => void; min?: number; max?: number }) {
+  return (
+    <div className="flex items-center gap-2">
+      <button
+        type="button"
+        onClick={() => onChange(Math.max(min, value - 1))}
+        className="h-8 w-8 rounded-md border border-input bg-background flex items-center justify-center hover:bg-muted transition-colors active:scale-95"
+        disabled={value <= min}
+      >
+        <Minus className="h-4 w-4" />
+      </button>
+      <span className="w-8 text-center font-semibold text-sm">{value}</span>
+      <button
+        type="button"
+        onClick={() => onChange(Math.min(max, value + 1))}
+        className="h-8 w-8 rounded-md border border-input bg-background flex items-center justify-center hover:bg-muted transition-colors active:scale-95"
+        disabled={value >= max}
+      >
+        <Plus className="h-4 w-4" />
+      </button>
+    </div>
+  );
+}
+
 export default function TaxInputPanel(props: Props) {
   const {
     annualIncome, setAnnualIncome,
@@ -42,7 +68,12 @@ export default function TaxInputPanel(props: Props) {
     taxpayerDiscount, setTaxpayerDiscount,
     activityType, setActivityType,
     isStarting, setIsStarting,
+    discounts, setDiscounts,
   } = props;
+
+  const updateDiscount = <K extends keyof DiscountInputs>(key: K, value: DiscountInputs[K]) => {
+    setDiscounts({ ...discounts, [key]: value });
+  };
 
   const handleIncomeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const raw = e.target.value.replace(/\s/g, '').replace(/[^0-9]/g, '');
@@ -163,6 +194,130 @@ export default function TaxInputPanel(props: Props) {
             Jsem začínající OSVČ (první rok podnikání)
             <InfoTip text="Začínající OSVČ mají snížené zálohy na sociální pojištění v prvním roce." />
           </Label>
+        </div>
+      </div>
+
+      {/* ===== ADDITIONAL DISCOUNTS SECTION ===== */}
+      <div className="border-t border-border pt-6 space-y-5">
+        <h3 className="text-base font-semibold text-foreground">
+          🏷️ Další možné slevy a daňová zvýhodnění
+        </h3>
+        <p className="text-xs text-muted-foreground -mt-3">
+          Tyto slevy se uplatňují pouze v režimu Paušálních výdajů. V Paušální dani je nelze uplatnit.
+        </p>
+
+        {/* 1. Spouse discount */}
+        <div className="space-y-2 p-4 rounded-lg bg-muted/50">
+          <div className="flex items-center gap-2">
+            <Checkbox
+              id="spouse"
+              checked={discounts.spouseDiscount}
+              onCheckedChange={(v) => {
+                updateDiscount('spouseDiscount', !!v);
+                if (!v) updateDiscount('spouseZTP', false);
+              }}
+            />
+            <Label htmlFor="spouse" className="flex items-center text-sm cursor-pointer leading-snug">
+              Manžel/manželka nebo partner/ka žije se mnou ve společné domácnosti s dítětem do 3 let a má příjem do 68 000 Kč/rok
+              <InfoTip text="Slevu lze uplatnit, pokud druhý z partnerů pobírá příjmy do 68 000 Kč ročně a pečuje o dítě mladší 3 let ve společné domácnosti." />
+            </Label>
+          </div>
+          {discounts.spouseDiscount && (
+            <div className="ml-6 space-y-2">
+              <div className="flex items-center gap-2">
+                <Checkbox
+                  id="spouseZTP"
+                  checked={discounts.spouseZTP}
+                  onCheckedChange={(v) => updateDiscount('spouseZTP', !!v)}
+                />
+                <Label htmlFor="spouseZTP" className="text-sm cursor-pointer">
+                  Manžel/manželka má průkaz ZTP/P
+                </Label>
+              </div>
+              <p className="text-xs text-muted-foreground">
+                Sleva: {discounts.spouseZTP ? '49 680' : '24 840'} Kč/rok
+              </p>
+            </div>
+          )}
+        </div>
+
+        {/* 2. Disability discount */}
+        <div className="space-y-3 p-4 rounded-lg bg-muted/50">
+          <Label className="flex items-center text-sm font-medium">
+            Sleva pro zdravotně znevýhodněné
+            <InfoTip text="Průkaz ZTP/P vydává úřad práce a nesouvisí přímo s invalidním důchodem – obě slevy lze uplatnit současně." />
+          </Label>
+          <Select
+            value={discounts.disabilityType}
+            onValueChange={(v) => updateDiscount('disabilityType', v as DisabilityType)}
+          >
+            <SelectTrigger className="w-full">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="none">Nemám invalidní důchod</SelectItem>
+              <SelectItem value="partial">Invalidita I. nebo II. stupně (2 520 Kč)</SelectItem>
+              <SelectItem value="full">Invalidita III. stupně (5 040 Kč)</SelectItem>
+            </SelectContent>
+          </Select>
+
+          <div className="flex items-center gap-2">
+            <Checkbox
+              id="ztp"
+              checked={discounts.ztpHolder}
+              onCheckedChange={(v) => updateDiscount('ztpHolder', !!v)}
+            />
+            <Label htmlFor="ztp" className="text-sm cursor-pointer">
+              Jsem držitel průkazu ZTP/P (16 140 Kč/rok)
+            </Label>
+          </div>
+        </div>
+
+        {/* 3. Children discount */}
+        <div className="space-y-3 p-4 rounded-lg bg-muted/50">
+          <Label className="flex items-center text-sm font-medium">
+            Daňové zvýhodnění na děti
+            <InfoTip text="Daňové zvýhodnění na děti je jednou z mála slev, která může přejít do tzv. daňového bonusu – tj. stát vám rozdíl doplatí." />
+          </Label>
+
+          <div className="flex items-center justify-between">
+            <span className="text-sm text-muted-foreground">Počet vyživovaných dětí</span>
+            <Stepper
+              value={discounts.childrenCount}
+              onChange={(v) => {
+                updateDiscount('childrenCount', v);
+                if (v === 0) updateDiscount('childrenZTPCount', 0);
+                if (discounts.childrenZTPCount > v) updateDiscount('childrenZTPCount', v);
+              }}
+              max={10}
+            />
+          </div>
+
+          {discounts.childrenCount > 0 && (
+            <div className="space-y-3 ml-2">
+              <div className="text-xs text-muted-foreground space-y-0.5">
+                <p>1. dítě: 15 204 Kč/rok</p>
+                <p>2. dítě: 22 320 Kč/rok</p>
+                <p>3. a další: 27 840 Kč/rok</p>
+              </div>
+
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <span className="text-sm text-muted-foreground">Z toho dětí se ZTP/P</span>
+                  <InfoTip text="Zvýhodnění na dítě se ZTP/P se zdvojnásobuje." />
+                </div>
+                <Stepper
+                  value={discounts.childrenZTPCount}
+                  onChange={(v) => updateDiscount('childrenZTPCount', v)}
+                  max={discounts.childrenCount}
+                />
+              </div>
+
+              <p className="text-xs text-accent italic">
+                💡 Pokud je daňové zvýhodnění na děti vyšší než vypočtená daň, vzniká daňový bonus – ten vám finanční úřad vyplatí. Zobrazíme ho ve výsledcích jako kladnou částku.
+              </p>
+            </div>
+          )}
         </div>
       </div>
     </div>
