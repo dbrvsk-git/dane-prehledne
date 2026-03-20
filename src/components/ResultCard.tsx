@@ -20,7 +20,8 @@ interface FlatTaxCardProps {
   annualIncome: number;
 }
 
-export function FlatTaxCard({ result, isCheaper }: FlatTaxCardProps) {
+export function FlatTaxCard({ result, isCheaper, annualIncome }: FlatTaxCardProps) {
+  const monthlyNet = result.available ? Math.round((annualIncome - result.annualTotal) / 12) : 0;
   return (
     <div className={`card-elevated p-6 space-y-4 ${!result.available ? 'opacity-60' : ''}`}>
       <div className="flex items-center justify-between">
