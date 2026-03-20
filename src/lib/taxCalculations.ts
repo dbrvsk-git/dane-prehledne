@@ -62,18 +62,7 @@ const STARTING_HEALTH_MONTHLY = 3306;
 const PROGRESSIVE_THRESHOLD = 1762812;
 
 export function calculateFlatTax(inputs: TaxInputs): FlatTaxResult {
-  const { annualIncome, expenseType, isStarting } = inputs;
-
-  if (isStarting) {
-    return {
-      available: false,
-      unavailableReason: 'Paušální daň není pro začínající OSVČ v prvním roce podnikání dostupná. Do režimu paušální daně lze vstoupit až od druhého roku podnikání.',
-      tier: 0,
-      monthlyPayment: 0,
-      annualTotal: 0,
-      tierName: '',
-    };
-  }
+  const { annualIncome, expenseType } = inputs;
 
   if (annualIncome > 2000000) {
     return {
