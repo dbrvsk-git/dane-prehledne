@@ -71,7 +71,7 @@ export default function Index() {
               <TabsTrigger value="classic" className="flex-1">Paušální výdaje</TabsTrigger>
             </TabsList>
             <TabsContent value="flat">
-              <FlatTaxCard result={flatTax} isCheaper={flatCheaper} />
+              <FlatTaxCard result={flatTax} isCheaper={flatCheaper} annualIncome={annualIncome} />
             </TabsContent>
             <TabsContent value="classic">
               <ClassicTaxCard
