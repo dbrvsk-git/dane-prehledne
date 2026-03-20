@@ -1,7 +1,15 @@
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
-import { Info, AlertTriangle } from 'lucide-react';
-import { formatCZK, hasAnyDiscount } from '@/lib/taxCalculations';
-import type { FlatTaxResult, ClassicTaxResult, DiscountInputs } from '@/lib/taxCalculations';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { Info, AlertTriangle } from "lucide-react";
+import { formatCZK, hasAnyDiscount } from "@/lib/taxCalculations";
+import type {
+  FlatTaxResult,
+  ClassicTaxResult,
+  DiscountInputs,
+} from "@/lib/taxCalculations";
 
 function InfoTip({ text }: { text: string }) {
   return (
@@ -21,12 +29,21 @@ interface FlatTaxCardProps {
   discounts: DiscountInputs;
 }
 
-export function FlatTaxCard({ result, isCheaper, annualIncome, discounts }: FlatTaxCardProps) {
-  const monthlyNet = result.available ? Math.round((annualIncome - result.annualTotal) / 12) : 0;
+export function FlatTaxCard({
+  result,
+  isCheaper,
+  annualIncome,
+  discounts,
+}: FlatTaxCardProps) {
+  const monthlyNet = result.available
+    ? Math.round((annualIncome - result.annualTotal) / 12)
+    : 0;
   const showDiscountWarning = hasAnyDiscount(discounts);
 
   return (
-    <div className={`card-elevated p-6 space-y-4 ${!result.available ? 'opacity-60' : ''}`}>
+    <div
+      className={`card-elevated p-6 space-y-4 ${!result.available ? "opacity-60" : ""}`}
+    >
       <div className="flex items-center justify-between">
         <h3 className="text-lg font-semibold text-foreground">Paušální daň</h3>
         {isCheaper && result.available && (
@@ -37,36 +54,42 @@ export function FlatTaxCard({ result, isCheaper, annualIncome, discounts }: Flat
       {!result.available ? (
         <div className="flex gap-3 p-4 rounded-lg bg-muted">
           <AlertTriangle className="h-5 w-5 text-destructive shrink-0 mt-0.5" />
-          <p className="text-sm text-muted-foreground">{result.unavailableReason}</p>
+          <p className="text-sm text-muted-foreground">
+            {result.unavailableReason}
+          </p>
         </div>
       ) : (
         <>
-          {showDiscountWarning && (
-            <div className="flex gap-3 p-4 rounded-lg bg-amber-50 border border-amber-200">
-              <AlertTriangle className="h-5 w-5 text-amber-600 shrink-0 mt-0.5" />
-              <p className="text-sm text-amber-800">
-                ⚠️ V paušálním daňovém režimu nelze uplatnit žádné slevy ani daňová zvýhodnění na děti.
-                Pro využití těchto slev je nutné přejít na klasické zdanění.
-              </p>
-            </div>
-          )}
-
           <div className="p-3 rounded-lg bg-muted text-sm text-muted-foreground">
             {result.tierName} ({formatCZK(result.monthlyPayment)}/měsíc)
             <InfoTip text="Paušální daň zahrnuje daň z příjmů, sociální a zdravotní pojištění v jedné platbě. Není nutné podávat daňové přiznání." />
           </div>
 
           <div className="space-y-3">
-            <Row label="Měsíční platba" value={formatCZK(result.monthlyPayment)} />
+            <Row
+              label="Měsíční platba"
+              value={formatCZK(result.monthlyPayment)}
+            />
             <div className="border-t border-border pt-3 space-y-2">
-              <Row label="CELKEM ročně" value={formatCZK(result.annualTotal)} bold />
-              <Row label="Čistý příjem po odvodech" value={formatCZK(annualIncome - result.annualTotal)} />
-              <Row label="Čistý měsíční výdělek" value={formatCZK(monthlyNet)} />
+              <Row
+                label="CELKEM ročně"
+                value={formatCZK(result.annualTotal)}
+                bold
+              />
+              <Row
+                label="Čistý příjem po odvodech"
+                value={formatCZK(annualIncome - result.annualTotal)}
+              />
+              <Row
+                label="Čistý měsíční výdělek"
+                value={formatCZK(monthlyNet)}
+              />
             </div>
           </div>
 
           <p className="text-xs text-muted-foreground italic">
-            ℹ️ V paušálním režimu nelze uplatnit slevy ani odpočty. Není nutné podávat daňové přiznání.
+            ℹ️ V paušálním režimu nelze uplatnit slevy ani odpočty. Není nutné
+            podávat daňové přiznání.
           </p>
         </>
       )}
@@ -82,17 +105,23 @@ interface ClassicTaxCardProps {
   onToggleDetail: () => void;
 }
 
-export function ClassicTaxCard({ result, annualIncome, isCheaper, showDetail, onToggleDetail }: ClassicTaxCardProps) {
+export function ClassicTaxCard({
+  result,
+  annualIncome,
+  isCheaper,
+  showDetail,
+  onToggleDetail,
+}: ClassicTaxCardProps) {
   const bd = result.discountBreakdown;
   const hasBonus = bd.taxBonus > 0;
 
   return (
     <div className="card-elevated p-6 space-y-4">
       <div className="flex items-center justify-between">
-        <h3 className="text-lg font-semibold text-foreground">Paušální výdaje</h3>
-        {isCheaper && (
-          <span className="badge-success">✓ Výhodnější</span>
-        )}
+        <h3 className="text-lg font-semibold text-foreground">
+          Paušální výdaje
+        </h3>
+        {isCheaper && <span className="badge-success">✓ Výhodnější</span>}
       </div>
 
       <div className="space-y-3">
@@ -108,13 +137,15 @@ export function ClassicTaxCard({ result, annualIncome, isCheaper, showDetail, on
             </div>
             <div className="flex justify-between items-center text-sm mt-1">
               <span className="text-green-600 font-medium">Daňový bonus</span>
-              <span className="text-green-600 font-semibold">+{formatCZK(bd.taxBonus)}</span>
+              <span className="text-green-600 font-semibold">
+                +{formatCZK(bd.taxBonus)}
+              </span>
             </div>
           </div>
         ) : (
           <Row
             label="Daň z příjmů"
-            value={formatCZK(result.incomeTaxAfterDiscount) + '/rok'}
+            value={formatCZK(result.incomeTaxAfterDiscount) + "/rok"}
             tip="Daň z příjmů po uplatnění slev. Sazba 15 %, nad 1 762 812 Kč sazbou 23 %."
           />
         )}
@@ -132,10 +163,23 @@ export function ClassicTaxCard({ result, annualIncome, isCheaper, showDetail, on
         />
 
         <div className="border-t border-border pt-3 space-y-2">
-          <Row label="CELKEM ročně" value={formatCZK(result.annualTotal)} bold />
-          <Row label="Čistý příjem po odvodech" value={formatCZK(result.netIncome)} />
-          <Row label="Čistý měsíční výdělek" value={formatCZK(result.monthlyNetIncome)} />
-          <Row label="Efektivní sazba odvodu" value={result.effectiveRate.toFixed(1) + ' %'} />
+          <Row
+            label="CELKEM ročně"
+            value={formatCZK(result.annualTotal)}
+            bold
+          />
+          <Row
+            label="Čistý příjem po odvodech"
+            value={formatCZK(result.netIncome)}
+          />
+          <Row
+            label="Čistý měsíční výdělek"
+            value={formatCZK(result.monthlyNetIncome)}
+          />
+          <Row
+            label="Efektivní sazba odvodu"
+            value={result.effectiveRate.toFixed(1) + " %"}
+          />
         </div>
       </div>
 
@@ -143,34 +187,62 @@ export function ClassicTaxCard({ result, annualIncome, isCheaper, showDetail, on
         onClick={onToggleDetail}
         className="text-sm text-accent hover:underline cursor-pointer font-medium"
       >
-        {showDetail ? '▲ Skrýt podrobný výpočet' : '▼ Zobrazit podrobný výpočet'}
+        {showDetail
+          ? "▲ Skrýt podrobný výpočet"
+          : "▼ Zobrazit podrobný výpočet"}
       </button>
 
       {showDetail && (
         <div className="p-4 rounded-lg bg-muted space-y-2 text-sm">
           <DetailRow label="Příjmy" value={formatCZK(annualIncome)} />
-          <DetailRow label="Paušální výdaje" value={`− ${formatCZK(result.expenses)} (strop: ${formatCZK(result.expenseCap)})`} />
+          <DetailRow
+            label="Paušální výdaje"
+            value={`− ${formatCZK(result.expenses)} (strop: ${formatCZK(result.expenseCap)})`}
+          />
           <DetailRow label="Základ daně" value={formatCZK(result.taxBase)} />
-          <DetailRow label="Daň (15 % / 23 %)" value={formatCZK(result.incomeTax)} />
+          <DetailRow
+            label="Daň (15 % / 23 %)"
+            value={formatCZK(result.incomeTax)}
+          />
 
           {/* Discount breakdown */}
           <div className="border-t border-border pt-2 mt-2 space-y-1">
-            <p className="font-medium text-xs text-muted-foreground uppercase tracking-wide">Slevy na dani</p>
-            <DetailRow label="Daň před slevami" value={formatCZK(bd.taxBeforeDiscounts)} />
+            <p className="font-medium text-xs text-muted-foreground uppercase tracking-wide">
+              Slevy na dani
+            </p>
+            <DetailRow
+              label="Daň před slevami"
+              value={formatCZK(bd.taxBeforeDiscounts)}
+            />
             {bd.taxpayerDiscount > 0 && (
-              <DetailRow label="Sleva na poplatníka" value={`− ${formatCZK(bd.taxpayerDiscount)}`} />
+              <DetailRow
+                label="Sleva na poplatníka"
+                value={`− ${formatCZK(bd.taxpayerDiscount)}`}
+              />
             )}
             {bd.spouseDiscount > 0 && (
-              <DetailRow label="Sleva na manžela/manželku" value={`− ${formatCZK(bd.spouseDiscount)}`} />
+              <DetailRow
+                label="Sleva na manžela/manželku"
+                value={`− ${formatCZK(bd.spouseDiscount)}`}
+              />
             )}
             {bd.disabilityDiscount > 0 && (
-              <DetailRow label="Sleva pro invalidy" value={`− ${formatCZK(bd.disabilityDiscount)}`} />
+              <DetailRow
+                label="Sleva pro invalidy"
+                value={`− ${formatCZK(bd.disabilityDiscount)}`}
+              />
             )}
             {bd.ztpDiscount > 0 && (
-              <DetailRow label="Sleva na ZTP/P" value={`− ${formatCZK(bd.ztpDiscount)}`} />
+              <DetailRow
+                label="Sleva na ZTP/P"
+                value={`− ${formatCZK(bd.ztpDiscount)}`}
+              />
             )}
             {bd.childrenDiscount > 0 && (
-              <DetailRow label="Zvýhodnění na děti" value={`− ${formatCZK(bd.childrenDiscount)}`} />
+              <DetailRow
+                label="Zvýhodnění na děti"
+                value={`− ${formatCZK(bd.childrenDiscount)}`}
+              />
             )}
             {hasBonus ? (
               <>
@@ -181,7 +253,11 @@ export function ClassicTaxCard({ result, annualIncome, isCheaper, showDetail, on
                 </div>
               </>
             ) : (
-              <DetailRow label="Výsledná daň z příjmů" value={formatCZK(result.incomeTaxAfterDiscount)} bold />
+              <DetailRow
+                label="Výsledná daň z příjmů"
+                value={formatCZK(result.incomeTaxAfterDiscount)}
+                bold
+              />
             )}
           </div>
         </div>
@@ -190,26 +266,48 @@ export function ClassicTaxCard({ result, annualIncome, isCheaper, showDetail, on
   );
 }
 
-function Row({ label, value, bold, tip, note }: {
-  label: string; value: string; bold?: boolean; tip?: string; note?: string;
+function Row({
+  label,
+  value,
+  bold,
+  tip,
+  note,
+}: {
+  label: string;
+  value: string;
+  bold?: boolean;
+  tip?: string;
+  note?: string;
 }) {
   return (
     <div>
-      <div className={`flex justify-between items-center ${bold ? 'text-lg font-bold' : 'text-sm'}`}>
+      <div
+        className={`flex justify-between items-center ${bold ? "text-lg font-bold" : "text-sm"}`}
+      >
         <span className="flex items-center text-muted-foreground">
           {label}
           {tip && <InfoTip text={tip} />}
         </span>
-        <span className={bold ? 'text-foreground' : ''}>{value}</span>
+        <span className={bold ? "text-foreground" : ""}>{value}</span>
       </div>
       {note && <p className="text-xs text-accent mt-1 italic">ℹ️ {note}</p>}
     </div>
   );
 }
 
-function DetailRow({ label, value, bold }: { label: string; value: string; bold?: boolean }) {
+function DetailRow({
+  label,
+  value,
+  bold,
+}: {
+  label: string;
+  value: string;
+  bold?: boolean;
+}) {
   return (
-    <div className={`flex justify-between ${bold ? 'font-semibold border-t border-border pt-2 mt-2' : ''}`}>
+    <div
+      className={`flex justify-between ${bold ? "font-semibold border-t border-border pt-2 mt-2" : ""}`}
+    >
       <span>{label}</span>
       <span>{value}</span>
     </div>
