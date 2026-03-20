@@ -70,11 +70,9 @@ export default function TaxInputPanel(props: Props) {
           type="text"
           inputMode="numeric"
           className="input-field text-right font-semibold text-lg"
-          value={formatInputValue(annualIncome) + ' Kč'}
+          value={formatInputValue(annualIncome)}
           onChange={handleIncomeChange}
           onFocus={(e) => {
-            const raw = annualIncome.toString();
-            e.target.value = raw;
             e.target.select();
           }}
           onBlur={() => {}}
