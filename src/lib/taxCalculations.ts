@@ -155,6 +155,7 @@ export function calculateClassicTax(inputs: TaxInputs): ClassicTaxResult {
   // Totals
   const annualTotal = incomeTaxAfterDiscount + socialInsurance + finalHealthInsurance;
   const netIncome = annualIncome - annualTotal;
+  const monthlyNetIncome = Math.round(netIncome / 12);
   const effectiveRate = annualIncome > 0 ? (annualTotal / annualIncome) * 100 : 0;
 
   return {
