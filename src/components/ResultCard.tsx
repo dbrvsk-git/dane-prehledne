@@ -45,8 +45,10 @@ export function FlatTaxCard({ result, isCheaper, annualIncome }: FlatTaxCardProp
 
           <div className="space-y-3">
             <Row label="Měsíční platba" value={formatCZK(result.monthlyPayment)} />
-            <div className="border-t border-border pt-3">
+            <div className="border-t border-border pt-3 space-y-2">
               <Row label="CELKEM ročně" value={formatCZK(result.annualTotal)} bold />
+              <Row label="Čistý příjem po odvodech" value={formatCZK(annualIncome - result.annualTotal)} />
+              <Row label="Čistý měsíční výdělek" value={formatCZK(monthlyNet)} />
             </div>
           </div>
 
