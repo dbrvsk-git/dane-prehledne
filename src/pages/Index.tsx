@@ -54,7 +54,7 @@ export default function Index() {
 
         {/* Results - desktop: 2 columns, mobile: tabs */}
         <div className="hidden md:grid md:grid-cols-2 gap-6">
-          <FlatTaxCard result={flatTax} isCheaper={flatCheaper} />
+          <FlatTaxCard result={flatTax} isCheaper={flatCheaper} annualIncome={annualIncome} />
           <ClassicTaxCard
             result={classicTax}
             annualIncome={annualIncome}
