@@ -100,6 +100,7 @@ export function ClassicTaxCard({ result, annualIncome, isCheaper, showDetail, on
         <div className="border-t border-border pt-3 space-y-2">
           <Row label="CELKEM ročně" value={formatCZK(result.annualTotal)} bold />
           <Row label="Čistý příjem po odvodech" value={formatCZK(result.netIncome)} />
+          <Row label="Čistý měsíční výdělek" value={formatCZK(result.monthlyNetIncome)} />
           <Row label="Efektivní sazba odvodu" value={result.effectiveRate.toFixed(1) + ' %'} />
         </div>
       </div>

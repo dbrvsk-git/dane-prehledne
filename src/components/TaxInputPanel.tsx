@@ -161,7 +161,7 @@ export default function TaxInputPanel(props: Props) {
           />
           <Label htmlFor="starting" className="flex items-center text-sm cursor-pointer">
             Jsem začínající OSVČ (první rok podnikání)
-            <InfoTip text="Začínající OSVČ mají snížené zálohy na sociální pojištění v prvním roce. Paušální daň v prvním roce není dostupná." />
+            <InfoTip text="Začínající OSVČ mají snížené zálohy na sociální pojištění v prvním roce." />
           </Label>
         </div>
       </div>

@@ -34,6 +34,7 @@ export interface ClassicTaxResult {
   healthMonthly: number;
   annualTotal: number;
   netIncome: number;
+  monthlyNetIncome: number;
   effectiveRate: number;
 }
 
