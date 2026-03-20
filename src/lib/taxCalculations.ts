@@ -34,6 +34,7 @@ export interface ClassicTaxResult {
   healthMonthly: number;
   annualTotal: number;
   netIncome: number;
+  monthlyNetIncome: number;
   effectiveRate: number;
 }
 
@@ -58,22 +59,11 @@ const HEALTH_RATE = 0.135;
 const SOCIAL_MIN_ANNUAL_MAIN = 235044; // 12 × 19587
 const HEALTH_MIN_ANNUAL_MAIN = 293802; // 12 × 24483.50
 const STARTING_SOCIAL_MONTHLY = 3575;
-const STARTING_HEALTH_MONTHLY = 3143;
+const STARTING_HEALTH_MONTHLY = 3306;
 const PROGRESSIVE_THRESHOLD = 1762812;
 
 export function calculateFlatTax(inputs: TaxInputs): FlatTaxResult {
-  const { annualIncome, expenseType, isStarting } = inputs;
-
-  if (isStarting) {
-    return {
-      available: false,
-      unavailableReason: 'Paušální daň není pro začínající OSVČ v prvním roce podnikání dostupná. Do režimu paušální daně lze vstoupit až od druhého roku podnikání.',
-      tier: 0,
-      monthlyPayment: 0,
-      annualTotal: 0,
-      tierName: '',
-    };
-  }
+  const { annualIncome, expenseType } = inputs;
 
   if (annualIncome > 2000000) {
     return {
@@ -166,6 +156,7 @@ export function calculateClassicTax(inputs: TaxInputs): ClassicTaxResult {
   // Totals
   const annualTotal = incomeTaxAfterDiscount + socialInsurance + finalHealthInsurance;
   const netIncome = annualIncome - annualTotal;
+  const monthlyNetIncome = Math.round(netIncome / 12);
   const effectiveRate = annualIncome > 0 ? (annualTotal / annualIncome) * 100 : 0;
 
   return {
@@ -182,6 +173,7 @@ export function calculateClassicTax(inputs: TaxInputs): ClassicTaxResult {
     healthMonthly: isStarting && activityType === 'main' ? STARTING_HEALTH_MONTHLY : Math.round(finalHealthInsurance / 12),
     annualTotal,
     netIncome,
+    monthlyNetIncome,
     effectiveRate,
   };
 }

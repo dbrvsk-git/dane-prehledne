@@ -54,7 +54,7 @@ export default function Index() {
 
         {/* Results - desktop: 2 columns, mobile: tabs */}
         <div className="hidden md:grid md:grid-cols-2 gap-6">
-          <FlatTaxCard result={flatTax} isCheaper={flatCheaper} />
+          <FlatTaxCard result={flatTax} isCheaper={flatCheaper} annualIncome={annualIncome} />
           <ClassicTaxCard
             result={classicTax}
             annualIncome={annualIncome}
@@ -71,7 +71,7 @@ export default function Index() {
               <TabsTrigger value="classic" className="flex-1">Paušální výdaje</TabsTrigger>
             </TabsList>
             <TabsContent value="flat">
-              <FlatTaxCard result={flatTax} isCheaper={flatCheaper} />
+              <FlatTaxCard result={flatTax} isCheaper={flatCheaper} annualIncome={annualIncome} />
             </TabsContent>
             <TabsContent value="classic">
               <ClassicTaxCard
@@ -90,6 +90,9 @@ export default function Index() {
           flatTaxTotal={flatTax.annualTotal}
           classicTotal={classicTax.annualTotal}
           flatTaxAvailable={flatTax.available}
+          flatTaxMonthlyNet={flatTax.available ? Math.round((annualIncome - flatTax.annualTotal) / 12) : undefined}
+          classicMonthlyNet={classicTax.monthlyNetIncome}
+          annualIncome={annualIncome}
         />
 
         {/* Summary */}

@@ -17,9 +17,11 @@ function InfoTip({ text }: { text: string }) {
 interface FlatTaxCardProps {
   result: FlatTaxResult;
   isCheaper: boolean;
+  annualIncome: number;
 }
 
-export function FlatTaxCard({ result, isCheaper }: FlatTaxCardProps) {
+export function FlatTaxCard({ result, isCheaper, annualIncome }: FlatTaxCardProps) {
+  const monthlyNet = result.available ? Math.round((annualIncome - result.annualTotal) / 12) : 0;
   return (
     <div className={`card-elevated p-6 space-y-4 ${!result.available ? 'opacity-60' : ''}`}>
       <div className="flex items-center justify-between">
@@ -43,8 +45,10 @@ export function FlatTaxCard({ result, isCheaper }: FlatTaxCardProps) {
 
           <div className="space-y-3">
             <Row label="Měsíční platba" value={formatCZK(result.monthlyPayment)} />
-            <div className="border-t border-border pt-3">
+            <div className="border-t border-border pt-3 space-y-2">
               <Row label="CELKEM ročně" value={formatCZK(result.annualTotal)} bold />
+              <Row label="Čistý příjem po odvodech" value={formatCZK(annualIncome - result.annualTotal)} />
+              <Row label="Čistý měsíční výdělek" value={formatCZK(monthlyNet)} />
             </div>
           </div>
 
@@ -96,6 +100,7 @@ export function ClassicTaxCard({ result, annualIncome, isCheaper, showDetail, on
         <div className="border-t border-border pt-3 space-y-2">
           <Row label="CELKEM ročně" value={formatCZK(result.annualTotal)} bold />
           <Row label="Čistý příjem po odvodech" value={formatCZK(result.netIncome)} />
+          <Row label="Čistý měsíční výdělek" value={formatCZK(result.monthlyNetIncome)} />
           <Row label="Efektivní sazba odvodu" value={result.effectiveRate.toFixed(1) + ' %'} />
         </div>
       </div>
