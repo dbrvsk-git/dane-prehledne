@@ -17,6 +17,7 @@ function InfoTip({ text }: { text: string }) {
 interface FlatTaxCardProps {
   result: FlatTaxResult;
   isCheaper: boolean;
+  annualIncome: number;
 }
 
 export function FlatTaxCard({ result, isCheaper }: FlatTaxCardProps) {
