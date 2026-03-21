@@ -73,8 +73,8 @@ export default function ComparisonChart({
       {netData.length > 0 && (
         <div className="card-elevated p-6">
           <h3 className="text-lg font-semibold text-foreground mb-4">Čistý měsíční výdělek</h3>
-          <ResponsiveContainer width="100%" height={260}>
-            <BarChart data={netData} barSize={60} margin={{ top: 30, right: 10, left: 10, bottom: 5 }}>
+          <ResponsiveContainer width="100%" height={280}>
+            <BarChart data={netData} barSize={60} margin={{ top: 35, right: 20, left: 20, bottom: 5 }}>
               <XAxis dataKey="name" tick={{ fontSize: 13 }} />
               <YAxis
                 tickFormatter={(v) => `${(v / 1000).toFixed(0)}k`}
