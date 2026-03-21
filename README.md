@@ -1,3 +1,3 @@
-# Welcome to your Lovable project
+# Daňová kalkulačka 2027
 
-TODO: Document your project here
+
