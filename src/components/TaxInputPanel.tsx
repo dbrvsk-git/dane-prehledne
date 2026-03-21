@@ -208,14 +208,15 @@ export default function TaxInputPanel(props: Props) {
 
         {/* 1. Spouse discount */}
         <div className="space-y-2 p-4 rounded-lg bg-muted/50">
-          <div className="flex items-center gap-2">
+          <div className="flex items-start gap-2">
             <Checkbox
               id="spouse"
               checked={discounts.spouseDiscount}
               onCheckedChange={(v) => {
-                updateDiscount('spouseDiscount', !!v);
-                if (!v) updateDiscount('spouseZTP', false);
+                const checked = v === true;
+                setDiscounts({ ...discounts, spouseDiscount: checked, spouseZTP: checked ? discounts.spouseZTP : false });
               }}
+              className="mt-0.5"
             />
             <Label htmlFor="spouse" className="flex items-center text-sm cursor-pointer leading-snug">
               Manžel/manželka nebo partner/ka žije se mnou ve společné domácnosti s dítětem do 3 let a má příjem do 68 000 Kč/rok
