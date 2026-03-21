@@ -44,8 +44,8 @@ export default function ComparisonChart({
     <div className="grid md:grid-cols-2 gap-6">
       <div className="card-elevated p-6">
         <h3 className="text-lg font-semibold text-foreground mb-4">Celková roční zátěž</h3>
-        <ResponsiveContainer width="100%" height={260}>
-          <BarChart data={costData} barSize={60} margin={{ top: 30, right: 10, left: 10, bottom: 5 }}>
+        <ResponsiveContainer width="100%" height={280}>
+          <BarChart data={costData} barSize={60} margin={{ top: 35, right: 20, left: 20, bottom: 5 }}>
             <XAxis dataKey="name" tick={{ fontSize: 13 }} />
             <YAxis
               tickFormatter={(v) => `${(v / 1000).toFixed(0)}k`}
@@ -57,7 +57,7 @@ export default function ComparisonChart({
                 dataKey="value"
                 position="top"
                 formatter={(v: number) => formatCZK(v)}
-                style={{ fontSize: 11, fontWeight: 600, fill: 'hsl(215, 60%, 22%)' }}
+                style={{ fontSize: 11, fontWeight: 600, fill: 'hsl(215, 60%, 22%)', whiteSpace: 'nowrap' as const }}
               />
               {costData.map((_, i) => (
                 <Cell
@@ -73,8 +73,8 @@ export default function ComparisonChart({
       {netData.length > 0 && (
         <div className="card-elevated p-6">
           <h3 className="text-lg font-semibold text-foreground mb-4">Čistý měsíční výdělek</h3>
-          <ResponsiveContainer width="100%" height={260}>
-            <BarChart data={netData} barSize={60} margin={{ top: 30, right: 10, left: 10, bottom: 5 }}>
+          <ResponsiveContainer width="100%" height={280}>
+            <BarChart data={netData} barSize={60} margin={{ top: 35, right: 20, left: 20, bottom: 5 }}>
               <XAxis dataKey="name" tick={{ fontSize: 13 }} />
               <YAxis
                 tickFormatter={(v) => `${(v / 1000).toFixed(0)}k`}
@@ -86,7 +86,7 @@ export default function ComparisonChart({
                   dataKey="value"
                   position="top"
                   formatter={(v: number) => formatCZK(v)}
-                  style={{ fontSize: 11, fontWeight: 600, fill: 'hsl(215, 60%, 22%)' }}
+                  style={{ fontSize: 11, fontWeight: 600, fill: 'hsl(215, 60%, 22%)', whiteSpace: 'nowrap' as const }}
                 />
                 {netData.map((_, i) => (
                   <Cell
