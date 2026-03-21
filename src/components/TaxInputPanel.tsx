@@ -286,10 +286,10 @@ export default function TaxInputPanel(props: Props) {
             <Stepper
               value={discounts.childrenCount}
               onChange={(v) => {
-                updateDiscount('childrenCount', v);
-                if (v === 0) updateDiscount('childrenZTPCount', 0);
-                if (discounts.childrenZTPCount > v) updateDiscount('childrenZTPCount', v);
+                const newZTP = v === 0 ? 0 : Math.min(discounts.childrenZTPCount, v);
+                setDiscounts({ ...discounts, childrenCount: v, childrenZTPCount: newZTP });
               }}
+              min={0}
               max={10}
             />
           </div>

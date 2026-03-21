@@ -86,7 +86,7 @@ export default function ComparisonChart({
                   dataKey="value"
                   position="top"
                   formatter={(v: number) => formatCZK(v)}
-                  style={{ fontSize: 11, fontWeight: 600, fill: 'hsl(215, 60%, 22%)' }}
+                  style={{ fontSize: 11, fontWeight: 600, fill: 'hsl(215, 60%, 22%)', whiteSpace: 'nowrap' as const }}
                 />
                 {netData.map((_, i) => (
                   <Cell
