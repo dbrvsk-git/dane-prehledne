@@ -44,8 +44,8 @@ export default function ComparisonChart({
     <div className="grid md:grid-cols-2 gap-6">
       <div className="card-elevated p-6">
         <h3 className="text-lg font-semibold text-foreground mb-4">Celková roční zátěž</h3>
-        <ResponsiveContainer width="100%" height={260}>
-          <BarChart data={costData} barSize={60} margin={{ top: 30, right: 10, left: 10, bottom: 5 }}>
+        <ResponsiveContainer width="100%" height={280}>
+          <BarChart data={costData} barSize={60} margin={{ top: 35, right: 20, left: 20, bottom: 5 }}>
             <XAxis dataKey="name" tick={{ fontSize: 13 }} />
             <YAxis
               tickFormatter={(v) => `${(v / 1000).toFixed(0)}k`}
