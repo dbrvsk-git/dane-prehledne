@@ -245,5 +245,5 @@ export function calculateClassicTax(inputs: TaxInputs): ClassicTaxResult {
 }
 
 export function formatCZK(value: number): string {
-  return value.toLocaleString('cs-CZ') + ' Kč';
+  return value.toLocaleString('cs-CZ') + '\u00A0Kč';
 }
