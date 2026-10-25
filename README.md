@@ -1,6 +1,6 @@
 # Daně přehledně
 
-Kalkulačka daní pro OSVČ 2027 – daň z příjmu, sociální a zdravotní pojištění.
+Kalkulačka daní pro OSVČ 2027 - daň z příjmu, sociální a zdravotní pojištění.
 
 https://daneprehledne.dbrvsk.cz
 
