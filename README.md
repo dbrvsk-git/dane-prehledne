@@ -1,5 +1,7 @@
-# Daňová kalkulačka 2027
+# Daně přehledně
 
-https://dbrvsk-git.github.io/dan-p-ehledn/
+Kalkulačka daní pro OSVČ 2027 – daň z příjmu, sociální a zdravotní pojištění.
 
+https://daneprehledne.dbrvsk.cz
 
+React + TypeScript + Vite, Tailwind, shadcn/ui, Recharts.
